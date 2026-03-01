@@ -1,10 +1,11 @@
 package com.sakti.erp.controller;
 
+import com.sakti.erp.dto.ProductScanRequest;
+import com.sakti.erp.dto.ProductScanResponse;
 import com.sakti.erp.model.Product;
 import com.sakti.erp.service.ProductService;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -20,5 +21,12 @@ public class ProductController {
     @GetMapping
     public List<Product> getAllProducts() {
         return productService.findAllProducts();
+    }
+
+    @PostMapping("/scan")
+    public ResponseEntity<ProductScanResponse> scanProduct(@RequestBody ProductScanRequest request) {
+        return productService.scanProduct(request)
+                .map(ResponseEntity::ok)
+                .orElse(ResponseEntity.notFound().build());
     }
 }
