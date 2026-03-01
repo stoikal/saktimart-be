@@ -1,9 +1,11 @@
 package com.sakti.erp.controller;
 
+import com.sakti.erp.dto.ProductCreateRequest;
 import com.sakti.erp.dto.ProductScanRequest;
 import com.sakti.erp.dto.ProductScanResponse;
 import com.sakti.erp.model.Product;
 import com.sakti.erp.service.ProductService;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -29,4 +31,11 @@ public class ProductController {
                 .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
     }
+
+    @PostMapping
+    public ResponseEntity<Void> createProduct(@RequestBody ProductCreateRequest request) {
+        productService.createProduct(request);
+        return ResponseEntity.status(HttpStatus.CREATED).build();
+    }
+
 }

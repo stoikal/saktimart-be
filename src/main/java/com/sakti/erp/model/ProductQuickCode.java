@@ -18,7 +18,17 @@ public class ProductQuickCode {
     private String code;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "product_id", nullable = false)
+    @JoinColumn(name = "id_product", nullable = false)
     @JsonBackReference
     private Product product;
+
+    // 1. Mandatory No-Args Constructor for JPA
+    public ProductQuickCode() {}
+
+    // 2. Custom Constructor for your Service logic
+    public ProductQuickCode(Product product, String code) {
+        this.product = product;
+        this.code = code;
+    }
 }
+

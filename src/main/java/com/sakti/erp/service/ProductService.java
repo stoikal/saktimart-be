@@ -1,9 +1,12 @@
 package com.sakti.erp.service;
 
+import com.sakti.erp.dto.ProductCreateRequest;
 import com.sakti.erp.dto.ProductScanRequest;
 import com.sakti.erp.dto.ProductScanResponse;
 import com.sakti.erp.model.Product;
 import com.sakti.erp.model.ProductPrice;
+import com.sakti.erp.model.ProductQuickCode;
+import com.sakti.erp.repository.ProductQuickCodeRepository;
 import com.sakti.erp.repository.ProductRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -16,8 +19,11 @@ import java.util.Optional;
 public class ProductService {
     private final ProductRepository productRepository;
 
-    public ProductService(ProductRepository productRepository) {
+    private final ProductQuickCodeRepository productQuickCodeRepository;
+
+    public ProductService(ProductRepository productRepository, ProductQuickCodeRepository productQuickCodeRepository) {
         this.productRepository = productRepository;
+        this.productQuickCodeRepository = productQuickCodeRepository;
     }
 
     public List<Product> findAllProducts() {
@@ -47,17 +53,10 @@ public class ProductService {
         if (product.getPrices() != null) {
             LocalDateTime now = LocalDateTime.now();
             Optional<ProductPrice> priceOpt = product.getPrices().stream()
-                    .filter(p -> {
-                        if (request.getPriceTierId() != null) {
-                            return p.getPriceTier().getId().equals(request.getPriceTierId());
-                        } else if (request.getPriceTierName() != null) {
-                            return p.getPriceTier().getName().equalsIgnoreCase(request.getPriceTierName());
-                        }
-                        return false;
-                    })
-                    .filter(p -> (p.getValidFrom() == null || !p.getValidFrom().isAfter(now)) &&
-                                 (p.getValidTo() == null || !p.getValidTo().isBefore(now)))
-                    .findFirst();
+                .filter(p -> p.getPriceTier().getName().equals(request.getTier()))
+                .filter(p -> (p.getValidFrom() == null || !p.getValidFrom().isAfter(now)) &&
+                     (p.getValidTo() == null || !p.getValidTo().isBefore(now)))
+                .findFirst();
 
             if (priceOpt.isPresent()) {
                 ProductPrice price = priceOpt.get();
@@ -68,5 +67,25 @@ public class ProductService {
         }
 
         return Optional.of(response);
+    }
+
+    @Transactional
+    public void createProduct(ProductCreateRequest req) {
+        // 1. Save the Product Identity
+        Product product = new Product();
+        product.setName(req.getName());
+        product.setBarcode(req.getBarcode());
+        product.setSku(req.getSku());
+        Product savedProduct = productRepository.save(product);
+
+        // 2. Save the list of Quick Codes
+        List<String> quickCodes = req.getQuickCodes();
+        if (quickCodes!= null && !quickCodes.isEmpty()) {
+            List<ProductQuickCode> codes = quickCodes.stream()
+                    .filter(code -> !code.isBlank()) // Ensure no empty strings are saved
+                    .map(code -> new ProductQuickCode(savedProduct, code))
+                    .toList();
+            productQuickCodeRepository.saveAll(codes);
+        }
     }
 }
