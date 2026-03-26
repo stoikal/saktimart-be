@@ -1,5 +1,7 @@
 package com.sakti.erp.model;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.Data;
 
@@ -23,8 +25,10 @@ public class ProductCategory {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "parent_id")
+    @JsonBackReference
     private ProductCategory parent;
 
     @OneToMany(mappedBy = "parent", cascade = CascadeType.ALL)
+    @JsonIgnore
     private List<ProductCategory> children = new ArrayList<>();
 }

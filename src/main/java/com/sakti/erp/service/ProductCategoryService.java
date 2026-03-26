@@ -47,4 +47,16 @@ public class ProductCategoryService {
 
         return categoryRepository.save(category);
     }
+
+    @Transactional
+    public void deleteCategory(UUID id) {
+        ProductCategory category = categoryRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("Category not found"));
+
+        if (!category.getChildren().isEmpty()) {
+            throw new IllegalStateException("Cannot delete category with children");
+        }
+
+        categoryRepository.delete(category);
+    }
 }

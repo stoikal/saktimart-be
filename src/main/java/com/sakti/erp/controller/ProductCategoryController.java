@@ -45,4 +45,10 @@ public class ProductCategoryController {
         ProductCategory created = categoryService.createCategory(request);
         return ResponseEntity.status(HttpStatus.CREATED).body(created);
     }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deleteCategory(@PathVariable UUID id) {
+        categoryService.deleteCategory(id);
+        return ResponseEntity.noContent().build();
+    }
 }
