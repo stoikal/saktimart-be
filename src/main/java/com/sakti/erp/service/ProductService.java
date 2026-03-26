@@ -52,21 +52,43 @@ public class ProductService {
         // Find price for the requested tier
         if (product.getPrices() != null) {
             LocalDateTime now = LocalDateTime.now();
-            Optional<ProductPrice> priceOpt = product.getPrices().stream()
-                .filter(p -> p.getPriceTier().getName().equals(request.getTier()))
-                .filter(p -> (p.getValidFrom() == null || !p.getValidFrom().isAfter(now)) &&
-                     (p.getValidTo() == null || !p.getValidTo().isBefore(now)))
-                .findFirst();
 
-            if (priceOpt.isPresent()) {
-                ProductPrice price = priceOpt.get();
+            // 1. Try to find the Requested Tier (e.g., "Wholesale")
+            Optional<ProductPrice> priceOpt = findActivePrice(product, request.getTier(), now);
+
+            // 2. FALLBACK: If not found, try to find the Default Tier
+            if (priceOpt.isEmpty()) {
+                priceOpt = findActiveDefaultPrice(product, now);
+            }
+
+            // 3. Set the response
+            priceOpt.ifPresent(price -> {
                 response.setPrice(price.getPrice());
                 response.setPriceTierId(price.getPriceTier().getId());
                 response.setPriceTierName(price.getPriceTier().getName());
-            }
+            });
         }
 
         return Optional.of(response);
+    }
+
+    private Optional<ProductPrice> findActivePrice(Product product, String tierName, LocalDateTime now) {
+        return product.getPrices().stream()
+                .filter(p -> p.getPriceTier().getName().equalsIgnoreCase(tierName))
+                .filter(p -> isWithinDateRange(p, now))
+                .findFirst();
+    }
+
+    private Optional<ProductPrice> findActiveDefaultPrice(Product product, LocalDateTime now) {
+        return product.getPrices().stream()
+                .filter(p -> p.getPriceTier().getIsDefault()) // Using the is_default column we created
+                .filter(p -> isWithinDateRange(p, now))
+                .findFirst();
+    }
+
+    private boolean isWithinDateRange(ProductPrice p, LocalDateTime now) {
+        return (p.getValidFrom() == null || !p.getValidFrom().isAfter(now)) &&
+                (p.getValidTo() == null || !p.getValidTo().isBefore(now));
     }
 
     @Transactional

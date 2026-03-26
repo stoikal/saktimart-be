@@ -18,4 +18,7 @@ public class PriceTier {
 
     @Column
     private String description;
+
+    @Column
+    private Boolean isDefault;
 }
