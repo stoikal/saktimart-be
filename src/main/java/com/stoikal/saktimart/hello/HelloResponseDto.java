@@ -1,9 +1,9 @@
-package com.stoikal.saktimart.dto;
+package com.stoikal.saktimart.hello;
 
-public class HelloResponse {
+public class HelloResponseDto {
     private String message;
 
-    public HelloResponse(String message) {
+    public HelloResponseDto(String message) {
         this.message = message;
     }
 

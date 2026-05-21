@@ -1,14 +1,12 @@
-package com.stoikal.saktimart.controller;
+package com.stoikal.saktimart.hello;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.stoikal.saktimart.dto.HelloResponse;
-
 @RestController
-@RequestMapping("/hello")
+@RequestMapping("/api/hello")
 public class HelloController {
 
     @Value("${POSTGRES_USERNAME}")
@@ -20,7 +18,7 @@ public class HelloController {
     }
 
     @GetMapping("/json")
-    public HelloResponse sayHelloJson() {
-        return new HelloResponse("Hello, World!");
+    public HelloResponseDto sayHelloJson() {
+        return new HelloResponseDto("Hello, World!");
     }
 }
