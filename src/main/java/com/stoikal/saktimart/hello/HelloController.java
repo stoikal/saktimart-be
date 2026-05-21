@@ -5,6 +5,8 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.stoikal.saktimart.common.dto.ApiResponse;
+
 @RestController
 @RequestMapping("/api/hello")
 public class HelloController {
@@ -12,13 +14,13 @@ public class HelloController {
     @Value("${POSTGRES_USERNAME}")
     private String dbUser;
 
-    @GetMapping("")
+    @GetMapping("/plain")
     public String sayHello() {
         return "Hello, " + dbUser + "!";
     }
 
-    @GetMapping("/json")
-    public HelloResponseDto sayHelloJson() {
-        return new HelloResponseDto("Hello, World!");
+    @GetMapping("")
+    public ApiResponse<HelloResponseDto> sayHelloJson() {
+        return ApiResponse.success(new HelloResponseDto("Hello, World!"));
     }
 }
