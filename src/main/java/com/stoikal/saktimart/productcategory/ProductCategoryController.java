@@ -7,15 +7,26 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.stoikal.saktimart.productcategory.dto.CreateProductCategoryRequest;
 import com.stoikal.saktimart.productcategory.dto.ProductCategoryResponse;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+
 
 @RestController
 @RequestMapping("/api/product-categories")
 public class ProductCategoryController {
     @GetMapping("")
-    public List<ProductCategoryResponse> sayHello() {
+    public List<ProductCategoryResponse> listProductCategories() {
         return List.of(
-                new ProductCategoryResponse(UUID.randomUUID(), "Electronics", "Devices and gadgets"),
-                new ProductCategoryResponse(UUID.randomUUID(), "Clothing", "Apparel and accessories"));
+                new ProductCategoryResponse(UUID.randomUUID(), "Electronics", "Devices and gadgets", null),
+                new ProductCategoryResponse(UUID.randomUUID(), "Clothing", "Apparel and accessories", null));
     }
+
+    @PostMapping("")
+    public CreateProductCategoryRequest create(@RequestBody CreateProductCategoryRequest entity) {
+
+        return entity;
+    }
+    
 }
