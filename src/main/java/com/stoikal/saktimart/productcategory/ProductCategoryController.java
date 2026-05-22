@@ -41,7 +41,7 @@ public class ProductCategoryController {
 
     @DeleteMapping("/{id}")
     public ApiResponse<Void> delete(@PathVariable UUID id) {
-        service.delete(id);
+        service.deleteById(id);
         return ApiResponse.success(null);
     }
 

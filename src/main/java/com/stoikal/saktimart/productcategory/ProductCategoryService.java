@@ -49,7 +49,7 @@ public class ProductCategoryService {
         return toResponse(repository.save(entity));
     }
 
-    public void delete(UUID id) {
+    public void deleteById(UUID id) {
         if (repository.existsByParent_IdProductCategory(id)) {
             throw new IllegalStateException("Cannot delete category with children");
         }
