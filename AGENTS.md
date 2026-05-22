@@ -3,6 +3,8 @@
 - **Language**: Java 21
 - **Framework**: Spring Boot 4.0.6
 
+DO NOT USE Lombok (at least for now)
+
 
 <!-- gitnexus:start -->
 # GitNexus — Code Intelligence

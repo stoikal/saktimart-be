@@ -1,7 +1,6 @@
 package com.stoikal.saktimart.productcategory;
 
 import java.util.List;
-import java.util.UUID;
 
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -20,17 +19,21 @@ import org.springframework.web.bind.annotation.RequestBody;
 @RestController
 @RequestMapping("/api/product-categories")
 public class ProductCategoryController {
+    private final ProductCategoryService service;
+
+    public ProductCategoryController(ProductCategoryService service) {
+        this.service = service;
+    }
+
     @GetMapping("")
     public ApiResponse<List<ProductCategoryResponse>> listProductCategories() {
-        return ApiResponse.success(List.of(
-                new ProductCategoryResponse(UUID.randomUUID(), "Electronics", "Devices and gadgets", null),
-                new ProductCategoryResponse(UUID.randomUUID(), "Clothing", "Apparel and accessories", null)));
+        return ApiResponse.success(service.findAll());
     }
 
     @PostMapping("")
-    public ApiResponse<CreateProductCategoryRequest> create(@RequestBody CreateProductCategoryRequest entity) {
+    public ApiResponse<ProductCategoryResponse> create(@RequestBody CreateProductCategoryRequest entity) {
 
-        return ApiResponse.success(entity);
+        return ApiResponse.success(service.create(entity));
     }
 
 }
