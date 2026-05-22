@@ -1,8 +1,11 @@
 package com.stoikal.saktimart.productcategory;
 
 import java.util.List;
+import java.util.UUID;
 
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -34,6 +37,12 @@ public class ProductCategoryController {
     public ApiResponse<ProductCategoryResponse> create(@RequestBody CreateProductCategoryRequest entity) {
 
         return ApiResponse.success(service.create(entity));
+    }
+
+    @DeleteMapping("/{id}")
+    public ApiResponse<Void> delete(@PathVariable UUID id) {
+        service.delete(id);
+        return ApiResponse.success(null);
     }
 
 }

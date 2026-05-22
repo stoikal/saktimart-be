@@ -1,6 +1,7 @@
 package com.stoikal.saktimart.productcategory;
 
 import java.util.List;
+import java.util.UUID;
 
 import org.springframework.stereotype.Service;
 
@@ -25,7 +26,9 @@ public class ProductCategoryService {
 
     public List<ProductCategoryResponse> findAll() {
         return repository.findAll().stream()
-                .map(entity -> new ProductCategoryResponse(entity.getIdProductCategory(), entity.getName(),
+                .map(entity -> new ProductCategoryResponse(
+                        entity.getIdProductCategory(),
+                        entity.getName(),
                         entity.getDescription(),
                         entity.getParent() != null ? entity.getParent().getIdProductCategory() : null))
                 .toList();
@@ -44,5 +47,13 @@ public class ProductCategoryService {
                 parent);
 
         return toResponse(repository.save(entity));
+    }
+
+    public void delete(UUID id) {
+        if (repository.existsByParent_IdProductCategory(id)) {
+            throw new IllegalStateException("Cannot delete category with children");
+        }
+
+        repository.deleteById(id);
     }
 }
