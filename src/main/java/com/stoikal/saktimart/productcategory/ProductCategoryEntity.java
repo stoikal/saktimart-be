@@ -3,8 +3,11 @@ package com.stoikal.saktimart.productcategory;
 import java.util.UUID;
 
 import jakarta.persistence.Entity;
+import jakarta.persistence.ForeignKey;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 
 @Entity
@@ -12,23 +15,28 @@ import jakarta.persistence.Table;
 public class ProductCategoryEntity {
     @Id
     @GeneratedValue
-    private UUID id;
+    private UUID idProductCategory;
 
     private String name;
 
     private String description;
 
+    @ManyToOne
+    @JoinColumn(name = "id_parent", foreignKey = @ForeignKey(name = "fk_product_category_parent"))
+    private ProductCategoryEntity parent;
+
     protected ProductCategoryEntity() {
     }
 
-    public ProductCategoryEntity(UUID id, String name, String description, ProductCategoryEntity parent) {
-        this.id = id;
+    public ProductCategoryEntity(UUID idProductCategory, String name, String description, ProductCategoryEntity parent) {
+        this.idProductCategory = idProductCategory;
         this.name = name;
         this.description = description;
+        this.parent = parent;
     }
 
-    public UUID getId() {
-        return id;
+    public UUID getIdProductCategory() {
+        return idProductCategory;
     }
 
     public String getName() {
@@ -39,11 +47,19 @@ public class ProductCategoryEntity {
         return description;
     }
 
+    public ProductCategoryEntity getParent() {
+        return parent;
+    }
+
     public void setName(String name) {
         this.name = name;
     }
 
     public void setDescription(String description) {
         this.description = description;
+    }
+
+    public void setParent(ProductCategoryEntity parent) {
+        this.parent = parent;
     }
 }

@@ -7,6 +7,9 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.stoikal.saktimart.common.dto.ApiResponse;
 
+import io.swagger.v3.oas.annotations.tags.Tag;
+
+@Tag(name = "Hello", description = "Just say hello")
 @RestController
 @RequestMapping("/api/hello")
 public class HelloController {

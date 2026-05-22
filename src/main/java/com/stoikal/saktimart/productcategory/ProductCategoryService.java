@@ -13,10 +13,10 @@ public class ProductCategoryService {
 
     private ProductCategoryResponse toResponse(ProductCategoryEntity entity) {
         return new ProductCategoryResponse(
-                entity.getId(),
+                entity.getIdProductCategory(),
                 entity.getName(),
                 entity.getDescription(),
-                null);
+                entity.getParent() != null ? entity.getParent().getIdProductCategory() : null);
     }
 
     public ProductCategoryService(ProductCategoryRepository repository) {
@@ -25,17 +25,23 @@ public class ProductCategoryService {
 
     public List<ProductCategoryResponse> findAll() {
         return repository.findAll().stream()
-                .map(entity -> new ProductCategoryResponse(entity.getId(), entity.getName(), entity.getDescription(),
-                        null))
+                .map(entity -> new ProductCategoryResponse(entity.getIdProductCategory(), entity.getName(),
+                        entity.getDescription(),
+                        entity.getParent() != null ? entity.getParent().getIdProductCategory() : null))
                 .toList();
     }
 
     public ProductCategoryResponse create(CreateProductCategoryRequest request) {
+        ProductCategoryEntity parent = null;
+        if (request.idParent() != null) {
+            parent = repository.findById(request.idParent())
+                    .orElseThrow(() -> new IllegalArgumentException("Parent not found"));
+        }
         ProductCategoryEntity entity = new ProductCategoryEntity(
                 null,
                 request.name(),
                 request.description(),
-                null);
+                parent);
 
         return toResponse(repository.save(entity));
     }
