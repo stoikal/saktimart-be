@@ -26,11 +26,7 @@ public class ProductCategoryService {
 
     public List<ProductCategoryResponse> findAll() {
         return repository.findAll().stream()
-                .map(entity -> new ProductCategoryResponse(
-                        entity.getIdProductCategory(),
-                        entity.getName(),
-                        entity.getDescription(),
-                        entity.getParent() != null ? entity.getParent().getIdProductCategory() : null))
+                .map(this::toResponse)
                 .toList();
     }
 

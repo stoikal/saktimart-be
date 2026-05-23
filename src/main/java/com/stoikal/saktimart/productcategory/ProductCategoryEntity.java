@@ -2,6 +2,8 @@ package com.stoikal.saktimart.productcategory;
 
 import java.util.UUID;
 
+import com.stoikal.saktimart.common.entity.BaseEntity;
+
 import jakarta.persistence.Entity;
 import jakarta.persistence.ForeignKey;
 import jakarta.persistence.GeneratedValue;
@@ -12,7 +14,7 @@ import jakarta.persistence.Table;
 
 @Entity
 @Table(schema = "master", name = "product_category")
-public class ProductCategoryEntity {
+public class ProductCategoryEntity extends BaseEntity {
     @Id
     @GeneratedValue
     private UUID idProductCategory;
@@ -28,7 +30,8 @@ public class ProductCategoryEntity {
     protected ProductCategoryEntity() {
     }
 
-    public ProductCategoryEntity(UUID idProductCategory, String name, String description, ProductCategoryEntity parent) {
+    public ProductCategoryEntity(UUID idProductCategory, String name, String description,
+            ProductCategoryEntity parent) {
         this.idProductCategory = idProductCategory;
         this.name = name;
         this.description = description;
