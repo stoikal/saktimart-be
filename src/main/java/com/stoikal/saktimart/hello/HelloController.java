@@ -5,7 +5,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.stoikal.saktimart.common.dto.ApiResponse;
+import com.stoikal.saktimart.common.dto.ApiEnvelope;
 
 import io.swagger.v3.oas.annotations.tags.Tag;
 
@@ -23,7 +23,7 @@ public class HelloController {
     }
 
     @GetMapping("")
-    public ApiResponse<HelloResponseDto> sayHelloJson() {
-        return ApiResponse.success(new HelloResponseDto("Hello, World!"));
+    public ApiEnvelope<HelloResponseDto> sayHelloJson() {
+        return ApiEnvelope.success(new HelloResponseDto("Hello, World!"));
     }
 }

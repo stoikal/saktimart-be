@@ -3,13 +3,15 @@ package com.stoikal.saktimart.productcategory;
 import java.util.List;
 import java.util.UUID;
 
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.stoikal.saktimart.common.dto.ApiResponse;
+import com.stoikal.saktimart.common.dto.ApiEnvelope;
 import com.stoikal.saktimart.productcategory.dto.CreateProductCategoryRequest;
 import com.stoikal.saktimart.productcategory.dto.ProductCategoryResponse;
 
@@ -29,20 +31,24 @@ public class ProductCategoryController {
     }
 
     @GetMapping("")
-    public ApiResponse<List<ProductCategoryResponse>> listProductCategories() {
-        return ApiResponse.success(service.findAll());
+    public ApiEnvelope<List<ProductCategoryResponse>> listProductCategories() {
+        return ApiEnvelope.success(service.findAll());
     }
 
     @PostMapping("")
-    public ApiResponse<ProductCategoryResponse> create(@RequestBody CreateProductCategoryRequest entity) {
+    public ResponseEntity<ApiEnvelope<ProductCategoryResponse>> create(
+            @RequestBody CreateProductCategoryRequest entity) {
 
-        return ApiResponse.success(service.create(entity));
+        return ResponseEntity
+                .status(HttpStatus.CREATED)
+                .body(ApiEnvelope.success(service.create(entity)));
     }
 
     @DeleteMapping("/{id}")
-    public ApiResponse<Void> delete(@PathVariable UUID id) {
+    public ResponseEntity<ApiEnvelope<Void>> delete(@PathVariable UUID id) {
         service.deleteById(id);
-        return ApiResponse.success(null);
+        return ResponseEntity
+                .status(HttpStatus.NO_CONTENT)
+                .body(ApiEnvelope.success(null));
     }
-
 }

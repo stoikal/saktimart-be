@@ -7,13 +7,21 @@ import java.util.UUID;
 
 import org.springframework.stereotype.Service;
 
+import com.stoikal.saktimart.common.exception.ResourceNotFoundException;
 import com.stoikal.saktimart.product.dto.CreateProductRequest;
+import com.stoikal.saktimart.product.dto.ProductCategorySummary;
 import com.stoikal.saktimart.product.dto.ProductResponse;
 
 @Service
 public class ProductService {
     private final ProductCategoryRepository productCategoryRepository;
     private final ProductRepository productRepository;
+
+    private ProductCategorySummary toCategorySummary(ProductCategoryEntity category) {
+        return new ProductCategorySummary(
+                category.getIdProductCategory(),
+                category.getName());
+    }
 
     private ProductResponse toResponse(ProductEntity product) {
         return new ProductResponse(
@@ -23,7 +31,7 @@ public class ProductService {
                 product.getDescription(),
                 product.getBarcode(),
                 product.getCategories() != null
-                        ? product.getCategories().stream().map(c -> c.getIdProductCategory()).toList()
+                        ? product.getCategories().stream().map(this::toCategorySummary).toList()
                         : null);
     }
 
@@ -38,6 +46,12 @@ public class ProductService {
                 .toList();
     }
 
+    public ProductResponse findById(UUID id) {
+        return productRepository.findById(id)
+                .map(this::toResponse)
+                .orElseThrow(() -> new ResourceNotFoundException("Product not found"));
+    }
+
     public ProductResponse create(CreateProductRequest request) {
         String normalizedSku = request.sku().trim().toUpperCase();
 
@@ -48,7 +62,7 @@ public class ProductService {
 
         // karena perlu cek apakah product category yg diberikan ada
         if (request.categories() != null && !request.categories().isEmpty()) {
-            for (UUID idProductCategory: request.categories()) {
+            for (UUID idProductCategory : request.categories()) {
                 if (!productCategoryRepository.existsById(idProductCategory)) {
                     throw new IllegalArgumentException("Category doesn't exist: " + idProductCategory);
                 }
@@ -62,12 +76,19 @@ public class ProductService {
                 request.description(),
                 request.barcode());
 
-        // untuk link ke product category jika diberikan
+        // untuk menghubungkan ke product category jika diberikan
         if (request.categories() != null && !request.categories().isEmpty()) {
             List<ProductCategoryEntity> categories = productCategoryRepository.findAllById(request.categories());
             categories.forEach(newProduct::addCategory);
         }
 
         return toResponse(productRepository.save(newProduct));
+    }
+
+    public void deleteById(UUID id) {
+        if (!productRepository.existsById(id)) {
+            throw new ResourceNotFoundException("Product not found");
+        }
+        productRepository.deleteById(id);
     }
 }

@@ -9,6 +9,5 @@ public record ProductResponse(
         String name,
         String description,
         String barcode,
-        List<UUID> categories
-    ) {
+        List<ProductCategorySummary> categories) {
 }
