@@ -5,12 +5,13 @@ import java.util.UUID;
 
 import org.springframework.stereotype.Service;
 
+import com.stoikal.saktimart.common.exception.ResourceNotFoundException;
 import com.stoikal.saktimart.productcategory.dto.CreateProductCategoryRequest;
 import com.stoikal.saktimart.productcategory.dto.ProductCategoryResponse;
 
 @Service
 public class ProductCategoryService {
-    private final ProductCategoryRepository repository;
+    private final ProductCategoryRepository productCategoryRepository;
 
     private ProductCategoryResponse toResponse(ProductCategoryEntity entity) {
         return new ProductCategoryResponse(
@@ -20,36 +21,48 @@ public class ProductCategoryService {
                 entity.getParent() != null ? entity.getParent().getIdProductCategory() : null);
     }
 
-    public ProductCategoryService(ProductCategoryRepository repository) {
-        this.repository = repository;
+    public ProductCategoryService(ProductCategoryRepository productCategoryRepository) {
+        this.productCategoryRepository = productCategoryRepository;
     }
 
     public List<ProductCategoryResponse> findAll() {
-        return repository.findAll().stream()
+        return productCategoryRepository.findAll().stream()
                 .map(this::toResponse)
                 .toList();
     }
 
+    public ProductCategoryResponse findById(UUID id) {
+        return productCategoryRepository.findById(id)
+                .map(this::toResponse)
+                .orElseThrow(() -> new ResourceNotFoundException("Category not found"));
+    }
+
     public ProductCategoryResponse create(CreateProductCategoryRequest request) {
         ProductCategoryEntity parent = null;
+
         if (request.idParent() != null) {
-            parent = repository.findById(request.idParent())
+            parent = productCategoryRepository.findById(request.idParent())
                     .orElseThrow(() -> new IllegalArgumentException("Parent not found"));
         }
-        ProductCategoryEntity entity = new ProductCategoryEntity(
+
+        ProductCategoryEntity newProductCategory = new ProductCategoryEntity(
                 null,
                 request.name(),
                 request.description(),
                 parent);
 
-        return toResponse(repository.save(entity));
+        return toResponse(productCategoryRepository.save(newProductCategory));
     }
 
     public void deleteById(UUID id) {
-        if (repository.existsByParent_IdProductCategory(id)) {
+        if (!productCategoryRepository.existsById(id)) {
+            throw new ResourceNotFoundException("Product category not found");
+        }
+
+        if (productCategoryRepository.existsByParent_IdProductCategory(id)) {
             throw new IllegalStateException("Cannot delete category with children");
         }
 
-        repository.deleteById(id);
+        productCategoryRepository.deleteById(id);
     }
 }

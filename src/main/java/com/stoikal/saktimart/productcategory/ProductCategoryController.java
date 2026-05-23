@@ -35,6 +35,11 @@ public class ProductCategoryController {
         return ApiEnvelope.success(service.findAll());
     }
 
+    @GetMapping("/{id}")
+    public ApiEnvelope<ProductCategoryResponse> find(@PathVariable UUID id) {
+        return ApiEnvelope.success(service.findById(id));
+    }
+
     @PostMapping("")
     public ResponseEntity<ApiEnvelope<ProductCategoryResponse>> create(
             @RequestBody CreateProductCategoryRequest entity) {
