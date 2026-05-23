@@ -7,9 +7,13 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.stoikal.saktimart.common.dto.ApiResponse;
+import com.stoikal.saktimart.product.dto.CreateProductRequest;
 import com.stoikal.saktimart.product.dto.ProductResponse;
 
 import io.swagger.v3.oas.annotations.tags.Tag;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+
 
 @Tag(name = "Products", description = "CRUD for products")
 @RestController
@@ -25,4 +29,10 @@ public class ProductController {
     public ApiResponse<List<ProductResponse>> listProducts() {
         return ApiResponse.success(service.findAll());
     }
+
+    @PostMapping("")
+    public ApiResponse<ProductResponse> create(@RequestBody CreateProductRequest entity) {        
+        return ApiResponse.success(service.create(entity));
+    }
+    
 }

@@ -39,8 +39,14 @@ public class ProductEntity extends BaseEntity {
     protected ProductEntity() {
     }
 
-    public ProductEntity(UUID idProduct, String name, String description, String barcode) {
+    public ProductEntity(
+            UUID idProduct,
+            String sku,
+            String name,
+            String description,
+            String barcode) {
         this.idProduct = idProduct;
+        this.sku = sku;
         this.name = name;
         this.description = description;
         this.barcode = barcode;
