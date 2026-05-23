@@ -1,9 +1,9 @@
-package com.stoikal.saktimart.product.dto;
+package com.stoikal.saktimart.masterproduct.dto;
 
 import java.util.List;
 import java.util.UUID;
 
-public record CreateProductRequest(
+public record CreateMasterProductRequest(
         String sku,
         String name,
         String description,

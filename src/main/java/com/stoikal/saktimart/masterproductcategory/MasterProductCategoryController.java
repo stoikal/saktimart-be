@@ -1,4 +1,4 @@
-package com.stoikal.saktimart.productcategory;
+package com.stoikal.saktimart.masterproductcategory;
 
 import java.util.List;
 import java.util.UUID;
@@ -12,37 +12,37 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.stoikal.saktimart.common.dto.ApiEnvelope;
-import com.stoikal.saktimart.productcategory.dto.CreateProductCategoryRequest;
-import com.stoikal.saktimart.productcategory.dto.ProductCategoryResponse;
+import com.stoikal.saktimart.masterproductcategory.dto.CreateMasterProductCategoryRequest;
+import com.stoikal.saktimart.masterproductcategory.dto.MasterProductCategoryResponse;
 
 import io.swagger.v3.oas.annotations.tags.Tag;
 
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 
-@Tag(name = "Product Categories", description = "CRUD for product categories")
+@Tag(name = "Master Product Categories", description = "CRUD for master product categories")
 @RestController
-@RequestMapping("/api/product-categories")
-public class ProductCategoryController {
-    private final ProductCategoryService service;
+@RequestMapping("/api/master/product-categories")
+public class MasterProductCategoryController {
+    private final MasterProductCategoryService service;
 
-    public ProductCategoryController(ProductCategoryService service) {
+    public MasterProductCategoryController(MasterProductCategoryService service) {
         this.service = service;
     }
 
     @GetMapping("")
-    public ApiEnvelope<List<ProductCategoryResponse>> listProductCategories() {
+    public ApiEnvelope<List<MasterProductCategoryResponse>> listProductCategories() {
         return ApiEnvelope.success(service.findAll());
     }
 
     @GetMapping("/{id}")
-    public ApiEnvelope<ProductCategoryResponse> find(@PathVariable UUID id) {
+    public ApiEnvelope<MasterProductCategoryResponse> find(@PathVariable UUID id) {
         return ApiEnvelope.success(service.findById(id));
     }
 
     @PostMapping("")
-    public ResponseEntity<ApiEnvelope<ProductCategoryResponse>> create(
-            @RequestBody CreateProductCategoryRequest entity) {
+    public ResponseEntity<ApiEnvelope<MasterProductCategoryResponse>> create(
+            @RequestBody CreateMasterProductCategoryRequest entity) {
 
         return ResponseEntity
                 .status(HttpStatus.CREATED)

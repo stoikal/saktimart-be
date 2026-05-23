@@ -1,11 +1,11 @@
-package com.stoikal.saktimart.product;
+package com.stoikal.saktimart.masterproduct;
 
 import java.util.HashSet;
 import java.util.Set;
 import java.util.UUID;
 
 import com.stoikal.saktimart.common.entity.BaseEntity;
-import com.stoikal.saktimart.productcategory.ProductCategoryEntity;
+import com.stoikal.saktimart.masterproductcategory.MasterProductCategoryEntity;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -18,7 +18,7 @@ import jakarta.persistence.Table;
 
 @Entity
 @Table(schema = "master", name = "product")
-public class ProductEntity extends BaseEntity {
+public class MasterProductEntity extends BaseEntity {
     @Id
     @GeneratedValue
     private UUID idProduct;
@@ -38,12 +38,12 @@ public class ProductEntity extends BaseEntity {
         name = "product_category_mapping",
         joinColumns = @JoinColumn(name = "id_product"),
         inverseJoinColumns = @JoinColumn(name = "id_product_category"))
-    private Set<ProductCategoryEntity> categories = new HashSet<>();
+    private Set<MasterProductCategoryEntity> categories = new HashSet<>();
 
-    protected ProductEntity() {
+    protected MasterProductEntity() {
     }
 
-    public ProductEntity(
+    public MasterProductEntity(
             UUID idProduct,
             String sku,
             String name,
@@ -76,7 +76,7 @@ public class ProductEntity extends BaseEntity {
         return barcode;
     }
 
-    public Set<ProductCategoryEntity> getCategories() {
+    public Set<MasterProductCategoryEntity> getCategories() {
         return categories;
     }
 
@@ -96,11 +96,11 @@ public class ProductEntity extends BaseEntity {
         this.barcode = barcode;
     }
 
-    public void addCategory(ProductCategoryEntity category) {
+    public void addCategory(MasterProductCategoryEntity category) {
         this.categories.add(category);
     }
 
-    public void removeCategory(ProductCategoryEntity category) {
+    public void removeCategory(MasterProductCategoryEntity category) {
         this.categories.remove(category);
     }
 }
