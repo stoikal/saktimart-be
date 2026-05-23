@@ -5,8 +5,11 @@ import com.stoikal.saktimart.masterproductcategory.MasterProductCategoryReposito
 import java.util.List;
 import java.util.UUID;
 
+import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 
+import com.stoikal.saktimart.common.dto.PageableRequest;
+import com.stoikal.saktimart.common.dto.PaginatedResponse;
 import com.stoikal.saktimart.common.exception.ResourceNotFoundException;
 import com.stoikal.saktimart.masterproduct.dto.CreateMasterProductRequest;
 import com.stoikal.saktimart.masterproduct.dto.MasterProductCategorySummary;
@@ -40,10 +43,19 @@ public class MasterProductService {
         this.masterProductCategoryRepository = masterProductCategoryRepository;
     }
 
-    public List<MasterProductResponse> findAll() {
-        return masterProductRepository.findAll().stream()
+    public PaginatedResponse<MasterProductResponse> findAll(PageableRequest request) {
+        Page<MasterProductEntity> page = masterProductRepository.findAll(request.toPageable());
+
+        List<MasterProductResponse> content = page.getContent().stream()
                 .map(this::toResponse)
                 .toList();
+
+        return new PaginatedResponse<>(
+                content,
+                request.page(),
+                page.getSize(),
+                page.getTotalElements(),
+                page.getTotalPages());
     }
 
     public MasterProductResponse findById(UUID id) {
