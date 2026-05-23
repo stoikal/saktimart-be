@@ -14,11 +14,18 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(IllegalStateException.class)
     public ResponseEntity<ApiResponse<Void>> handleIllegalState(IllegalStateException ex) {
         return ResponseEntity
+                .status(HttpStatus.CONFLICT)
+                .body(ApiResponse.error(ex.getMessage()));
+    }
+
+    @ExceptionHandler(IllegalArgumentException.class)
+    public ResponseEntity<ApiResponse<Void>> handleIllegalArgument(IllegalArgumentException ex) {
+        return ResponseEntity
                 .status(HttpStatus.BAD_REQUEST)
                 .body(ApiResponse.error(ex.getMessage()));
     }
 
-    @ExceptionHandler({NoHandlerFoundException.class, NoResourceFoundException.class})
+    @ExceptionHandler({ NoHandlerFoundException.class, NoResourceFoundException.class })
     public ResponseEntity<ApiResponse<Void>> handleNotFound(Exception ex) {
         return ResponseEntity
                 .status(HttpStatus.NOT_FOUND)

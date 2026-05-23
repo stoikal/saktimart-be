@@ -5,6 +5,10 @@
 
 DO NOT USE Lombok (at least for now)
 
+## Conventions
+
+- Code comments have to answer the question "why"
+
 
 <!-- gitnexus:start -->
 # GitNexus — Code Intelligence

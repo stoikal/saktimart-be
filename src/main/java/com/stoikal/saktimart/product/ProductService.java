@@ -1,6 +1,9 @@
 package com.stoikal.saktimart.product;
 
+import com.stoikal.saktimart.productcategory.ProductCategoryEntity;
+import com.stoikal.saktimart.productcategory.ProductCategoryRepository;
 import java.util.List;
+import java.util.UUID;
 
 import org.springframework.stereotype.Service;
 
@@ -9,6 +12,7 @@ import com.stoikal.saktimart.product.dto.ProductResponse;
 
 @Service
 public class ProductService {
+    private final ProductCategoryRepository productCategoryRepository;
     private final ProductRepository productRepository;
 
     private ProductResponse toResponse(ProductEntity product) {
@@ -23,8 +27,9 @@ public class ProductService {
                         : null);
     }
 
-    public ProductService(ProductRepository productRepository) {
+    public ProductService(ProductRepository productRepository, ProductCategoryRepository productCategoryRepository) {
         this.productRepository = productRepository;
+        this.productCategoryRepository = productCategoryRepository;
     }
 
     public List<ProductResponse> findAll() {
@@ -36,8 +41,18 @@ public class ProductService {
     public ProductResponse create(CreateProductRequest request) {
         String normalizedSku = request.sku().trim().toUpperCase();
 
+        // karena perlu cek keunikan sku. case-insensitive.
         if (productRepository.existsBySkuIgnoreCase(normalizedSku)) {
-            throw new IllegalArgumentException("SKU already exists");
+            throw new IllegalStateException("SKU already exists");
+        }
+
+        // karena perlu cek apakah product category yg diberikan ada
+        if (request.categories() != null && !request.categories().isEmpty()) {
+            for (UUID idProductCategory: request.categories()) {
+                if (!productCategoryRepository.existsById(idProductCategory)) {
+                    throw new IllegalArgumentException("Category doesn't exist: " + idProductCategory);
+                }
+            }
         }
 
         ProductEntity newProduct = new ProductEntity(
@@ -46,6 +61,12 @@ public class ProductService {
                 request.name(),
                 request.description(),
                 request.barcode());
+
+        // untuk link ke product category jika diberikan
+        if (request.categories() != null && !request.categories().isEmpty()) {
+            List<ProductCategoryEntity> categories = productCategoryRepository.findAllById(request.categories());
+            categories.forEach(newProduct::addCategory);
+        }
 
         return toResponse(productRepository.save(newProduct));
     }

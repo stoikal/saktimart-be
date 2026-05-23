@@ -33,7 +33,11 @@ public class ProductEntity extends BaseEntity {
     private String barcode;
 
     @ManyToMany
-    @JoinTable(schema = "master", name = "product_category_mapping", joinColumns = @JoinColumn(name = "id_product"), inverseJoinColumns = @JoinColumn(name = "id_product_category"))
+    @JoinTable(
+        schema = "master",
+        name = "product_category_mapping",
+        joinColumns = @JoinColumn(name = "id_product"),
+        inverseJoinColumns = @JoinColumn(name = "id_product_category"))
     private Set<ProductCategoryEntity> categories = new HashSet<>();
 
     protected ProductEntity() {
