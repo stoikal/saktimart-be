@@ -111,3 +111,135 @@ To check whether embeddings exist, inspect `.gitnexus/meta.json` — the `stats.
 | Index, status, clean, wiki CLI commands | `.claude/skills/gitnexus/gitnexus-cli/SKILL.md` |
 
 <!-- gitnexus:end -->
+
+<!-- db_design:start -->
+# DB Design
+
+```
+Table master.product {
+  id_product uuid [pk]
+  sku text [unique]
+  name text
+  description text
+  barcode text
+  updated_at datetime
+}
+
+Table inventory.product_valuation {
+  id_product_valuation uuid [pk]
+  id_product uuid [ref: - master.product.id_product]
+  avg_cost bigint
+  last_purchase_price bigint
+  updated_at datetime
+}
+
+Table master.product_category {
+  id_product_category uuid [pk]
+  name text
+  description text
+  id_parent uuid [ref: > master.product_category.id_product_category]
+}
+
+Table master.product_category_mapping {
+  id_product uuid [ref: > master.product.id_product]
+  id_product_category uuid [ref: > master.product_category.id_product_category]
+}
+
+Table inventory.product_inventory {
+  id_product_inventory uuid [pk]
+  id_product uuid [ref: - master.product.id_product]
+  stock_qty int
+  updated_at datetime
+}
+
+Table pricing.product_price {
+  id_product_price uuid [pk]
+  id_product uuid [ref: > master.product.id_product]
+  id_price_tier uuid [ref: > pricing.price_tier.id_price_tier]
+  price bigint
+  valid_from datetime
+  valid_to datetime 
+}
+
+Table pricing.price_tier {
+  id_price_tier uuid [pk]
+  name text
+  description text
+}
+
+Table master.customer {
+  id_customer uuid [pk]
+  name text
+  id_price_tier uuid [ref: > pricing.price_tier.id_price_tier]
+}
+
+Table master.user {
+  id_user uuid [pk]
+  name text
+  role text
+}
+
+Table master.supplier {
+  id_supplier uuid [pk]
+  name text
+  description text
+}
+
+Table transaction.purchase {
+  id_purchase uuid [pk]
+  id_supplier uuid [ref: > master.supplier.id_supplier]
+  invoice_number text
+  total bigint
+}
+
+Table transaction.purchase_item {
+  id_purchase_item uuid [pk]
+  id_purchase uuid [ref: > transaction.purchase.id_purchase]
+  id_product uuid [ref: > master.product.id_product]
+  cost_price bigint
+  qty int
+  subtotal bigint
+  recorded_name text
+  recorded_sku text
+}
+
+Table transaction.sale {
+  id_sale uuid [pk]
+  id_customer uuid [ref: > master.customer.id_customer]
+  total_amount bigint
+  invoice_number text [unique]
+  grand_total bigint
+  paid_amount bigint
+  change_amount bigint
+  discount_amount bigint
+  transaction_date datetime
+  id_user uuid [ref: > master.user.id_user]
+}
+
+Table transaction.sale_item {
+  id_sale_item uuid [pk]
+  id_sale uuid [ref: > transaction.sale.id_sale]
+  id_product uuid [ref: > master.product.id_product]
+  id_price_tier uuid [ref: > pricing.price_tier.id_price_tier]
+  unit_price bigint
+  cost_price bigint
+  qty int
+  subtotal bigint
+  recorded_name text
+  recorded_sku text
+  type text // 'SALE', 'RETURN'
+  id_original_sale_item_id uuid [ref: > transaction.sale_item.id_sale_item]
+}
+
+Table inventory.stock_movement {
+  id uuid [pk]
+  id_product uuid [ref: > master.product.id_product]
+  qty_change int
+  movement_type text // 'SALE', 'PURCHASE', 'ADJUSTMENT', 'RETURN'
+  reference_id uuid // Links to sale_id or purchase_id
+  created_at timestamp
+}
+
+
+```
+<!-- db_design:end -->
