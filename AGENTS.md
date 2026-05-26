@@ -13,7 +13,7 @@ DO NOT USE Lombok (at least for now)
 <!-- gitnexus:start -->
 # GitNexus — Code Intelligence
 
-This project is indexed by GitNexus as **saktimart-be** (192 symbols, 465 relationships, 20 execution flows). Use the GitNexus MCP tools to understand code, assess impact, and navigate safely.
+This project is indexed by GitNexus as **saktimart-be** (194 symbols, 465 relationships, 20 execution flows). Use the GitNexus MCP tools to understand code, assess impact, and navigate safely.
 
 > If any GitNexus tool warns the index is stale, run `npx gitnexus analyze` in terminal first.
 
@@ -122,7 +122,9 @@ Table master.product {
   name text
   description text
   barcode text
-  created_at datetime
+  is_enabled boolean [default: true]
+  deleted_at datetime
+  created_at datetime [default: 'now()']
   updated_at datetime
 }
 
@@ -131,7 +133,7 @@ Table inventory.product_valuation {
   id_product uuid [unique, ref: - master.product.id_product]
   avg_cost bigint
   last_purchase_price bigint
-  created_at datetime
+  created_at datetime [default: 'now()']
   updated_at datetime
 }
 
@@ -140,14 +142,16 @@ Table master.product_category {
   name text
   description text
   id_parent uuid [ref: > master.product_category.id_product_category]
-  created_at datetime
+  is_enabled boolean [default: true]
+  deleted_at datetime
+  created_at datetime [default: 'now()']
   updated_at datetime
 }
 
 Table master.product_category_mapping {
   id_product uuid [ref: > master.product.id_product]
   id_product_category uuid [ref: > master.product_category.id_product_category]
-  created_at datetime
+  created_at datetime [default: 'now()']
   updated_at datetime
 }
 
@@ -155,7 +159,7 @@ Table inventory.product_inventory {
   id_product_inventory uuid [pk]
   id_product uuid [unique, ref: - master.product.id_product]
   stock_qty int
-  created_at datetime
+  created_at datetime [default: 'now()']
   updated_at datetime
 }
 
@@ -166,7 +170,8 @@ Table pricing.product_price {
   price bigint
   valid_from datetime
   valid_to datetime
-  created_at datetime
+  is_enabled boolean [default: true]
+  created_at datetime [default: 'now()']
   updated_at datetime
 }
 
@@ -174,15 +179,21 @@ Table pricing.price_tier {
   id_price_tier uuid [pk]
   name text
   description text
-  created_at datetime
+  is_enabled boolean [default: true]
+  deleted_at datetime
+  created_at datetime [default: 'now()']
   updated_at datetime
 }
+// NOTE: a DEFAULT tier with id `00000000-0000-0000-0000-000000000001` is seeded by Flyway V2.
+//       It cannot be deleted due to the `prevent_default_price_tier_delete` trigger.
 
 Table master.customer {
   id_customer uuid [pk]
   name text
   id_price_tier uuid [ref: > pricing.price_tier.id_price_tier]
-  created_at datetime
+  is_enabled boolean [default: true]
+  deleted_at datetime
+  created_at datetime [default: 'now()']
   updated_at datetime
 }
 
@@ -190,7 +201,9 @@ Table master.user {
   id_user uuid [pk]
   name text
   role text
-  created_at datetime
+  is_enabled boolean [default: true]
+  deleted_at datetime
+  created_at datetime [default: 'now()']
   updated_at datetime
 }
 
@@ -198,7 +211,9 @@ Table master.supplier {
   id_supplier uuid [pk]
   name text
   description text
-  created_at datetime
+  is_enabled boolean [default: true]
+  deleted_at datetime
+  created_at datetime [default: 'now()']
   updated_at datetime
 }
 
@@ -207,7 +222,7 @@ Table transaction.purchase {
   id_supplier uuid [ref: > master.supplier.id_supplier]
   invoice_number text
   total bigint
-  created_at datetime
+  created_at datetime [default: 'now()']
   updated_at datetime
 }
 
@@ -220,7 +235,7 @@ Table transaction.purchase_item {
   subtotal bigint
   recorded_name text
   recorded_sku text
-  created_at datetime
+  created_at datetime [default: 'now()']
   updated_at datetime
 }
 
@@ -235,7 +250,7 @@ Table transaction.sale {
   discount_amount bigint
   transaction_date datetime
   id_user uuid [ref: > master.user.id_user]
-  created_at datetime
+  created_at datetime [default: 'now()']
   updated_at datetime
 }
 
@@ -252,7 +267,7 @@ Table transaction.sale_item {
   recorded_sku text
   type text // 'SALE', 'RETURN'
   id_original_sale_item_id uuid [ref: > transaction.sale_item.id_sale_item]
-  created_at datetime
+  created_at datetime [default: 'now()']
   updated_at datetime
 }
 
@@ -262,7 +277,7 @@ Table inventory.stock_movement {
   qty_change int
   movement_type text // 'SALE', 'PURCHASE', 'ADJUSTMENT', 'RETURN'
   reference_id uuid // Links to sale_id or purchase_id
-  created_at datetime
+  created_at datetime [default: 'now()']
   updated_at datetime
 }
 
