@@ -128,7 +128,7 @@ Table master.product {
 
 Table inventory.product_valuation {
   id_product_valuation uuid [pk]
-  id_product uuid [ref: - master.product.id_product]
+  id_product uuid [unique, ref: - master.product.id_product]
   avg_cost bigint
   last_purchase_price bigint
   created_at datetime
@@ -153,7 +153,7 @@ Table master.product_category_mapping {
 
 Table inventory.product_inventory {
   id_product_inventory uuid [pk]
-  id_product uuid [ref: - master.product.id_product]
+  id_product uuid [unique, ref: - master.product.id_product]
   stock_qty int
   created_at datetime
   updated_at datetime
