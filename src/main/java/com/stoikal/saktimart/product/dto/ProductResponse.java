@@ -1,13 +1,13 @@
-package com.stoikal.saktimart.masterproduct.dto;
+package com.stoikal.saktimart.product.dto;
 
 import java.util.List;
 import java.util.UUID;
 
-public record MasterProductResponse(
+public record ProductResponse(
         UUID idProduct,
         String sku,
         String name,
         String description,
         String barcode,
-        List<MasterProductCategorySummary> categories) {
+        List<ProductCategorySummary> categories) {
 }

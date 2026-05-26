@@ -1,4 +1,4 @@
-package com.stoikal.saktimart.masterproductcategory;
+package com.stoikal.saktimart.productcategory;
 
 import java.util.UUID;
 
@@ -14,7 +14,7 @@ import jakarta.persistence.Table;
 
 @Entity
 @Table(schema = "master", name = "product_category")
-public class MasterProductCategoryEntity extends BaseEntity {
+public class ProductCategoryEntity extends BaseEntity {
     @Id
     @GeneratedValue
     private UUID idProductCategory;
@@ -25,13 +25,13 @@ public class MasterProductCategoryEntity extends BaseEntity {
 
     @ManyToOne
     @JoinColumn(name = "id_parent", foreignKey = @ForeignKey(name = "fk_product_category_parent"))
-    private MasterProductCategoryEntity parent;
+    private ProductCategoryEntity parent;
 
-    protected MasterProductCategoryEntity() {
+    protected ProductCategoryEntity() {
     }
 
-    public MasterProductCategoryEntity(UUID idProductCategory, String name, String description,
-            MasterProductCategoryEntity parent) {
+    public ProductCategoryEntity(UUID idProductCategory, String name, String description,
+            ProductCategoryEntity parent) {
         this.idProductCategory = idProductCategory;
         this.name = name;
         this.description = description;
@@ -50,7 +50,7 @@ public class MasterProductCategoryEntity extends BaseEntity {
         return description;
     }
 
-    public MasterProductCategoryEntity getParent() {
+    public ProductCategoryEntity getParent() {
         return parent;
     }
 
@@ -62,7 +62,7 @@ public class MasterProductCategoryEntity extends BaseEntity {
         this.description = description;
     }
 
-    public void setParent(MasterProductCategoryEntity parent) {
+    public void setParent(ProductCategoryEntity parent) {
         this.parent = parent;
     }
 }

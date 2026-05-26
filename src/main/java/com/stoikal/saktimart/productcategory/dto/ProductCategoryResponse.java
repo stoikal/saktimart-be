@@ -1,10 +1,10 @@
-package com.stoikal.saktimart.masterproductcategory.dto;
+package com.stoikal.saktimart.productcategory.dto;
 
 import java.util.UUID;
 
 import jakarta.annotation.Nullable;
 
-public record MasterProductCategoryResponse(
+public record ProductCategoryResponse(
         UUID idProductCategory,
         String name,
         String description,

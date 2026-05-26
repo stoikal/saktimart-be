@@ -1,11 +1,11 @@
-package com.stoikal.saktimart.masterproduct;
+package com.stoikal.saktimart.product;
 
 import java.util.HashSet;
 import java.util.Set;
 import java.util.UUID;
 
 import com.stoikal.saktimart.common.entity.BaseEntity;
-import com.stoikal.saktimart.masterproductcategory.MasterProductCategoryEntity;
+import com.stoikal.saktimart.productcategory.ProductCategoryEntity;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -18,7 +18,7 @@ import jakarta.persistence.Table;
 
 @Entity
 @Table(schema = "master", name = "product")
-public class MasterProductEntity extends BaseEntity {
+public class ProductEntity extends BaseEntity {
     @Id
     @GeneratedValue
     private UUID idProduct;
@@ -38,12 +38,12 @@ public class MasterProductEntity extends BaseEntity {
         name = "product_category_mapping",
         joinColumns = @JoinColumn(name = "id_product"),
         inverseJoinColumns = @JoinColumn(name = "id_product_category"))
-    private Set<MasterProductCategoryEntity> categories = new HashSet<>();
+    private Set<ProductCategoryEntity> categories = new HashSet<>();
 
-    protected MasterProductEntity() {
+    protected ProductEntity() {
     }
 
-    public MasterProductEntity(
+    public ProductEntity(
             UUID idProduct,
             String sku,
             String name,
@@ -76,7 +76,7 @@ public class MasterProductEntity extends BaseEntity {
         return barcode;
     }
 
-    public Set<MasterProductCategoryEntity> getCategories() {
+    public Set<ProductCategoryEntity> getCategories() {
         return categories;
     }
 
@@ -96,11 +96,11 @@ public class MasterProductEntity extends BaseEntity {
         this.barcode = barcode;
     }
 
-    public void addCategory(MasterProductCategoryEntity category) {
+    public void addCategory(ProductCategoryEntity category) {
         this.categories.add(category);
     }
 
-    public void removeCategory(MasterProductCategoryEntity category) {
+    public void removeCategory(ProductCategoryEntity category) {
         this.categories.remove(category);
     }
 }

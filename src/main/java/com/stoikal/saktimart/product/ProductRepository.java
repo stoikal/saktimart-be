@@ -1,9 +1,9 @@
-package com.stoikal.saktimart.masterproduct;
+package com.stoikal.saktimart.product;
 
 import java.util.UUID;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 
-public interface MasterProductRepository extends JpaRepository<MasterProductEntity, UUID> {
+public interface ProductRepository extends JpaRepository<ProductEntity, UUID> {
     boolean existsBySkuIgnoreCase(String sku);
 }
