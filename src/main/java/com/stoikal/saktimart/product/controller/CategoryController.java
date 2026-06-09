@@ -1,4 +1,4 @@
-package com.stoikal.saktimart.product;
+package com.stoikal.saktimart.product.controller;
 
 import java.util.Set;
 import java.util.UUID;
@@ -15,25 +15,27 @@ import org.springframework.web.bind.annotation.RestController;
 import com.stoikal.saktimart.common.dto.ApiEnvelope;
 import com.stoikal.saktimart.common.dto.PageableRequest;
 import com.stoikal.saktimart.common.dto.PaginatedResponse;
-import com.stoikal.saktimart.product.dto.CreateProductRequest;
-import com.stoikal.saktimart.product.dto.ProductResponse;
+import com.stoikal.saktimart.product.dto.CreateCategoryRequest;
+import com.stoikal.saktimart.product.dto.CategoryResponse;
+import com.stoikal.saktimart.product.service.CategoryService;
 
 import io.swagger.v3.oas.annotations.tags.Tag;
+
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 
-@Tag(name = "Products", description = "CRUD for products")
+@Tag(name = "Product Categories", description = "CRUD for product categories")
 @RestController
-@RequestMapping("/api/products")
-public class ProductController {
-    private final ProductService service;
+@RequestMapping("/api/product-categories")
+public class CategoryController {
+    private final CategoryService service;
 
-    public ProductController(ProductService service) {
+    public CategoryController(CategoryService service) {
         this.service = service;
     }
 
     @GetMapping("")
-    public ApiEnvelope<PaginatedResponse<ProductResponse>> listProducts(
+    public ApiEnvelope<PaginatedResponse<CategoryResponse>> listCategories(
             @RequestParam(name = "page", required = false) Integer page,
             @RequestParam(name = "size", required = false) Integer size,
             @RequestParam(name = "sort", required = false) String sort,
@@ -45,18 +47,20 @@ public class ProductController {
                 sort,
                 direction,
                 "createdAt",
-                Set.of("createdAt", "updatedAt", "name", "sku"));
+                Set.of("createdAt", "updatedAt", "name"));
 
         return ApiEnvelope.success(service.findAll(request));
     }
 
     @GetMapping("/{id}")
-    public ApiEnvelope<ProductResponse> find(@PathVariable UUID id) {
+    public ApiEnvelope<CategoryResponse> find(@PathVariable UUID id) {
         return ApiEnvelope.success(service.findById(id));
     }
 
     @PostMapping("")
-    public ResponseEntity<ApiEnvelope<ProductResponse>> create(@RequestBody CreateProductRequest entity) {
+    public ResponseEntity<ApiEnvelope<CategoryResponse>> create(
+            @RequestBody CreateCategoryRequest entity) {
+
         return ResponseEntity
                 .status(HttpStatus.CREATED)
                 .body(ApiEnvelope.success(service.create(entity)));
@@ -69,5 +73,4 @@ public class ProductController {
                 .status(HttpStatus.NO_CONTENT)
                 .body(ApiEnvelope.success(null));
     }
-
 }

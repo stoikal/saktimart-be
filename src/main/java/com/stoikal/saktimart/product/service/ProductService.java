@@ -1,7 +1,7 @@
-package com.stoikal.saktimart.product;
+package com.stoikal.saktimart.product.service;
 
-import com.stoikal.saktimart.productcategory.ProductCategoryEntity;
-import com.stoikal.saktimart.productcategory.ProductCategoryRepository;
+import com.stoikal.saktimart.product.entity.CategoryEntity;
+import com.stoikal.saktimart.product.repository.CategoryRepository;
 import java.util.List;
 import java.util.UUID;
 
@@ -12,16 +12,18 @@ import com.stoikal.saktimart.common.dto.PageableRequest;
 import com.stoikal.saktimart.common.dto.PaginatedResponse;
 import com.stoikal.saktimart.common.exception.ResourceNotFoundException;
 import com.stoikal.saktimart.product.dto.CreateProductRequest;
-import com.stoikal.saktimart.product.dto.ProductCategorySummary;
+import com.stoikal.saktimart.product.dto.CategorySummary;
 import com.stoikal.saktimart.product.dto.ProductResponse;
+import com.stoikal.saktimart.product.entity.ProductEntity;
+import com.stoikal.saktimart.product.repository.ProductRepository;
 
 @Service
 public class ProductService {
-    private final ProductCategoryRepository productCategoryRepository;
+    private final CategoryRepository categoryRepository;
     private final ProductRepository productRepository;
 
-    private ProductCategorySummary toCategorySummary(ProductCategoryEntity category) {
-        return new ProductCategorySummary(
+    private CategorySummary toCategorySummary(CategoryEntity category) {
+        return new CategorySummary(
                 category.getIdProductCategory(),
                 category.getName());
     }
@@ -38,9 +40,9 @@ public class ProductService {
                         : null);
     }
 
-    public ProductService(ProductRepository productRepository, ProductCategoryRepository productCategoryRepository) {
+    public ProductService(ProductRepository productRepository, CategoryRepository categoryRepository) {
         this.productRepository = productRepository;
-        this.productCategoryRepository = productCategoryRepository;
+        this.categoryRepository = categoryRepository;
     }
 
     public PaginatedResponse<ProductResponse> findAll(PageableRequest request) {
@@ -67,15 +69,13 @@ public class ProductService {
     public ProductResponse create(CreateProductRequest request) {
         String normalizedSku = request.sku().trim().toUpperCase();
 
-        // karena perlu cek keunikan sku. case-insensitive.
         if (productRepository.existsBySkuIgnoreCase(normalizedSku)) {
             throw new IllegalStateException("SKU already exists");
         }
 
-        // karena perlu cek apakah product category yg diberikan ada
         if (request.categories() != null && !request.categories().isEmpty()) {
             for (UUID idProductCategory : request.categories()) {
-                if (!productCategoryRepository.existsById(idProductCategory)) {
+                if (!categoryRepository.existsById(idProductCategory)) {
                     throw new IllegalArgumentException("Category doesn't exist: " + idProductCategory);
                 }
             }
@@ -88,9 +88,8 @@ public class ProductService {
                 request.description(),
                 request.barcode());
 
-        // untuk menghubungkan ke product category jika diberikan
         if (request.categories() != null && !request.categories().isEmpty()) {
-            List<ProductCategoryEntity> categories = productCategoryRepository.findAllById(request.categories());
+            List<CategoryEntity> categories = categoryRepository.findAllById(request.categories());
             categories.forEach(newProduct::addCategory);
         }
 

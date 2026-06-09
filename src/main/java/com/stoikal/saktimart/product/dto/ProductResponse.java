@@ -9,5 +9,5 @@ public record ProductResponse(
         String name,
         String description,
         String barcode,
-        List<ProductCategorySummary> categories) {
+        List<CategorySummary> categories) {
 }

@@ -1,11 +1,10 @@
-package com.stoikal.saktimart.product;
+package com.stoikal.saktimart.product.entity;
 
 import java.util.HashSet;
 import java.util.Set;
 import java.util.UUID;
 
 import com.stoikal.saktimart.common.entity.BaseEntity;
-import com.stoikal.saktimart.productcategory.ProductCategoryEntity;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -38,7 +37,7 @@ public class ProductEntity extends BaseEntity {
         name = "product_category_mapping",
         joinColumns = @JoinColumn(name = "id_product"),
         inverseJoinColumns = @JoinColumn(name = "id_product_category"))
-    private Set<ProductCategoryEntity> categories = new HashSet<>();
+    private Set<CategoryEntity> categories = new HashSet<>();
 
     protected ProductEntity() {
     }
@@ -76,7 +75,7 @@ public class ProductEntity extends BaseEntity {
         return barcode;
     }
 
-    public Set<ProductCategoryEntity> getCategories() {
+    public Set<CategoryEntity> getCategories() {
         return categories;
     }
 
@@ -96,11 +95,11 @@ public class ProductEntity extends BaseEntity {
         this.barcode = barcode;
     }
 
-    public void addCategory(ProductCategoryEntity category) {
+    public void addCategory(CategoryEntity category) {
         this.categories.add(category);
     }
 
-    public void removeCategory(ProductCategoryEntity category) {
+    public void removeCategory(CategoryEntity category) {
         this.categories.remove(category);
     }
 }
