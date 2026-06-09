@@ -2,6 +2,7 @@ package com.stoikal.saktimart.pricing.service;
 
 import com.stoikal.saktimart.common.dto.PageableRequest;
 import com.stoikal.saktimart.common.dto.PaginatedResponse;
+import com.stoikal.saktimart.pricing.dto.CreatePriceTierRequest;
 import com.stoikal.saktimart.pricing.dto.PriceTierResponse;
 import com.stoikal.saktimart.pricing.entity.PriceTierEntity;
 import com.stoikal.saktimart.pricing.repository.PriceTierRepository;
@@ -42,5 +43,17 @@ public class PriceTierService {
                 page.getTotalElements(),
                 page.getTotalPages()
         );
+    }
+
+    public PriceTierResponse create(CreatePriceTierRequest request) {
+        PriceTierEntity entity = new PriceTierEntity(
+                null,
+                request.name(),
+                request.description(),
+                true,
+                false
+        );
+
+        return toResponse(priceTierRepository.save(entity));
     }
 }

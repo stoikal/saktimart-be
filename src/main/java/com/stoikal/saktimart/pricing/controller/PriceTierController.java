@@ -3,10 +3,16 @@ package com.stoikal.saktimart.pricing.controller;
 import com.stoikal.saktimart.common.dto.ApiEnvelope;
 import com.stoikal.saktimart.common.dto.PageableRequest;
 import com.stoikal.saktimart.common.dto.PaginatedResponse;
+import com.stoikal.saktimart.pricing.dto.CreatePriceTierRequest;
 import com.stoikal.saktimart.pricing.dto.PriceTierResponse;
 import com.stoikal.saktimart.pricing.service.PriceTierService;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -33,5 +39,14 @@ public class PriceTierController {
 
         PageableRequest request = PageableRequest.of(page, size, sort, direction, "createdAt", Set.of("name"));
         return ApiEnvelope.success(priceTierService.findAll(request));
+    }
+
+    @PostMapping("")
+    public ResponseEntity<ApiEnvelope<PriceTierResponse>> create(
+            @Valid @RequestBody CreatePriceTierRequest request) {
+
+        return ResponseEntity
+                .status(HttpStatus.CREATED)
+                .body(ApiEnvelope.success(priceTierService.create(request)));
     }
 }
