@@ -13,7 +13,7 @@ DO NOT USE Lombok (at least for now)
 <!-- gitnexus:start -->
 # GitNexus — Code Intelligence
 
-This project is indexed by GitNexus as **saktimart-be** (233 symbols, 569 relationships, 20 execution flows). Use the GitNexus MCP tools to understand code, assess impact, and navigate safely.
+This project is indexed by GitNexus as **saktimart-be** (250 symbols, 602 relationships, 20 execution flows). Use the GitNexus MCP tools to understand code, assess impact, and navigate safely.
 
 > If any GitNexus tool warns the index is stale, run `npx gitnexus analyze` in terminal first.
 
@@ -173,6 +173,7 @@ Table pricing.product_price {
   created_at datetime [default: 'now()']
   updated_at datetime
 }
+// NOTE: valid_to because I want to use append only when editing/deleting price
 
 Table pricing.price_tier {
   id_price_tier uuid [pk]
