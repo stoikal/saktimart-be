@@ -170,7 +170,6 @@ Table pricing.product_price {
   price bigint
   valid_from datetime
   valid_to datetime
-  is_enabled boolean [default: true]
   created_at datetime [default: 'now()']
   updated_at datetime
 }
