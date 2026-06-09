@@ -17,7 +17,7 @@ public record PageableRequest(
 
     private static final int DEFAULT_PAGE = 1;
     private static final int DEFAULT_SIZE = 10;
-    private static final int MAX_SIZE = 100;
+    private static final int MAX_SIZE = 999999;
     private static final String DEFAULT_DIRECTION = "asc";
     private static final Set<String> ALLOWED_DIRECTIONS = Set.of("asc", "desc");
 
