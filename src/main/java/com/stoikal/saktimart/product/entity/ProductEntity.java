@@ -15,6 +15,8 @@ import jakarta.persistence.JoinTable;
 import jakarta.persistence.ManyToMany;
 import jakarta.persistence.Table;
 
+import org.hibernate.annotations.SQLInsert;
+
 @Entity
 @Table(schema = "master", name = "product")
 public class ProductEntity extends BaseEntity {
@@ -37,6 +39,7 @@ public class ProductEntity extends BaseEntity {
         name = "product_category_mapping",
         joinColumns = @JoinColumn(name = "id_product"),
         inverseJoinColumns = @JoinColumn(name = "id_product_category"))
+    @SQLInsert(sql = "INSERT INTO master.product_category_mapping (id_product, id_product_category, created_at, updated_at) VALUES (?, ?, NOW(), NOW())")
     private Set<CategoryEntity> categories = new HashSet<>();
 
     protected ProductEntity() {
