@@ -1,7 +1,7 @@
 <!-- gitnexus:start -->
 # GitNexus — Code Intelligence
 
-This project is indexed by GitNexus as **saktimart-be** (250 symbols, 602 relationships, 20 execution flows). Use the GitNexus MCP tools to understand code, assess impact, and navigate safely.
+This project is indexed by GitNexus as **saktimart-be** (270 symbols, 653 relationships, 21 execution flows). Use the GitNexus MCP tools to understand code, assess impact, and navigate safely.
 
 > If any GitNexus tool warns the index is stale, run `npx gitnexus analyze` in terminal first.
 
@@ -86,6 +86,10 @@ npx gitnexus analyze --embeddings
 To check whether embeddings exist, inspect `.gitnexus/meta.json` — the `stats.embeddings` field shows the count (0 means no embeddings). **Running analyze without `--embeddings` will delete any previously generated embeddings.**
 
 > Claude Code users: A PostToolUse hook handles this automatically after `git commit` and `git merge`.
+
+## Cross-Repo Groups
+
+This repository is listed under GitNexus **group(s): saktimart** (see `~/.gitnexus/groups/`). For blast radius across repository boundaries, use MCP tools `group_impact`, `group_sync`, `group_query`, `group_contracts`, `group_status`, and `group_list`. From the terminal: `npx gitnexus group list`, `npx gitnexus group sync <name>`, `npx gitnexus group impact <name> --target <symbol> --repo <group-path>`.
 
 ## CLI
 
