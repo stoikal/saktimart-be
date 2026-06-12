@@ -6,10 +6,11 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 
+import java.time.LocalDateTime;
 import java.util.UUID;
 
 @Entity
-@Table(schema = "pricing", name = "priceTier")
+@Table(schema = "pricing", name = "price_tier")
 public class PriceTierEntity extends BaseEntity {
     @Id
     @GeneratedValue
@@ -21,7 +22,7 @@ public class PriceTierEntity extends BaseEntity {
 
     private boolean isEnabled;
 
-    private boolean isDeleted;
+    private LocalDateTime deletedAt;
 
     protected PriceTierEntity() {
     }
@@ -31,13 +32,13 @@ public class PriceTierEntity extends BaseEntity {
             String name,
             String description,
             boolean isEnabled,
-            boolean isDeleted
+            LocalDateTime deletedAt
     ) {
         this.idPriceTier = idPriceTier;
         this.name = name;
         this.description = description;
         this.isEnabled = isEnabled;
-        this.isDeleted = isDeleted;
+        this.deletedAt = deletedAt;
     }
 
     public UUID getIdPriceTier() {
@@ -56,8 +57,8 @@ public class PriceTierEntity extends BaseEntity {
         return isEnabled;
     }
 
-    public boolean getIsDeleted () {
-        return isDeleted;
+    public LocalDateTime getDeletedAt() {
+        return deletedAt;
     }
 
     public void setName (String name) {
@@ -72,7 +73,7 @@ public class PriceTierEntity extends BaseEntity {
         this.isEnabled = isEnabled;
     }
 
-    public void setIsDeleted (boolean isDeleted) {
-        this.isDeleted = isDeleted;
+    public void setDeletedAt(LocalDateTime deletedAt) {
+        this.deletedAt = deletedAt;
     }
 }

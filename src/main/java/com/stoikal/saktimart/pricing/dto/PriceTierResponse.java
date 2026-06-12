@@ -1,5 +1,6 @@
 package com.stoikal.saktimart.pricing.dto;
 
+import java.time.LocalDateTime;
 import java.util.UUID;
 
 public record PriceTierResponse(
@@ -7,6 +8,6 @@ public record PriceTierResponse(
         String name,
         String description,
         boolean isEnabled,
-        boolean isDeleted
+        LocalDateTime deletedAt
 ) {
 }

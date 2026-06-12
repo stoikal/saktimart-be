@@ -21,7 +21,7 @@ public class PriceTierService {
                 entity.getName(),
                 entity.getDescription(),
                 entity.getIsEnabled(),
-                entity.getIsDeleted()
+                entity.getDeletedAt()
         );
     }
 
@@ -51,7 +51,7 @@ public class PriceTierService {
                 request.name(),
                 request.description(),
                 true,
-                false
+                null
         );
 
         return toResponse(priceTierRepository.save(entity));
