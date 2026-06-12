@@ -96,7 +96,7 @@ public class ProductService {
         return toResponse(productRepository.save(newProduct));
     }
 
-    public void deleteById(UUID id) {
+    public void softDeleteById(UUID id) {
         if (!productRepository.existsById(id)) {
             throw new ResourceNotFoundException("Product not found");
         }

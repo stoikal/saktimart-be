@@ -15,8 +15,12 @@ import jakarta.persistence.JoinTable;
 import jakarta.persistence.ManyToMany;
 import jakarta.persistence.Table;
 
+import org.hibernate.annotations.SQLDelete;
 import org.hibernate.annotations.SQLInsert;
+import org.hibernate.annotations.SQLRestriction;
 
+@SQLDelete(sql = "UPDATE master.product SET deleted_at = NOW() WHERE id_product = ?")
+@SQLRestriction("deleted_at IS NULL")
 @Entity
 @Table(schema = "master", name = "product")
 public class ProductEntity extends BaseEntity {

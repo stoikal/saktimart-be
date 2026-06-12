@@ -65,7 +65,7 @@ public class ProductController {
 
     @DeleteMapping("/{id}")
     public ResponseEntity<ApiEnvelope<Void>> delete(@PathVariable UUID id) {
-        service.deleteById(id);
+        service.softDeleteById(id);
         return ResponseEntity
                 .status(HttpStatus.NO_CONTENT)
                 .body(ApiEnvelope.success(null));
