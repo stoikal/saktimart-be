@@ -13,7 +13,7 @@ DO NOT USE Lombok (at least for now)
 <!-- gitnexus:start -->
 # GitNexus — Code Intelligence
 
-This project is indexed by GitNexus as **saktimart-be** (270 symbols, 653 relationships, 21 execution flows). Use the GitNexus MCP tools to understand code, assess impact, and navigate safely.
+This project is indexed by GitNexus as **saktimart-be** (342 symbols, 882 relationships, 27 execution flows). Use the GitNexus MCP tools to understand code, assess impact, and navigate safely.
 
 > If any GitNexus tool warns the index is stale, run `npx gitnexus analyze` in terminal first.
 
@@ -196,7 +196,6 @@ Table master.customer {
   id_customer uuid [pk]
   name text
   id_price_tier uuid [ref: > pricing.price_tier.id_price_tier]
-  is_enabled boolean [default: true]
   deleted_at datetime
   created_at datetime [default: 'now()']
   updated_at datetime
