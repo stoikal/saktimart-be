@@ -8,6 +8,7 @@ public record PriceTierResponse(
         String name,
         String description,
         boolean isEnabled,
-        LocalDateTime deletedAt
+        LocalDateTime deletedAt,
+        Short sortOrder
 ) {
 }

@@ -184,6 +184,7 @@ Table pricing.price_tier {
   name text
   description text
   is_enabled boolean [default: true]
+  sort_order smallint
   deleted_at datetime
   created_at datetime [default: 'now()']
   updated_at datetime

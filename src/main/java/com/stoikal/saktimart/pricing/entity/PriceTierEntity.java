@@ -20,9 +20,13 @@ public class PriceTierEntity extends BaseEntity {
 
     private String description;
 
-    private boolean isEnabled;
+    private Boolean isDefault;
+
+    private Boolean isEnabled;
 
     private LocalDateTime deletedAt;
+
+    private Short sortOrder;
 
     protected PriceTierEntity() {
     }
@@ -32,13 +36,15 @@ public class PriceTierEntity extends BaseEntity {
             String name,
             String description,
             boolean isEnabled,
-            LocalDateTime deletedAt
+            LocalDateTime deletedAt,
+            Short sortOrder
     ) {
         this.idPriceTier = idPriceTier;
         this.name = name;
         this.description = description;
         this.isEnabled = isEnabled;
         this.deletedAt = deletedAt;
+        this.sortOrder = sortOrder;
     }
 
     public UUID getIdPriceTier() {
@@ -53,12 +59,20 @@ public class PriceTierEntity extends BaseEntity {
         return description;
     }
 
-    public boolean getIsEnabled () {
+    public Boolean getIsDefault() {
+        return isDefault;
+    }
+
+    public Boolean getIsEnabled () {
         return isEnabled;
     }
 
     public LocalDateTime getDeletedAt() {
         return deletedAt;
+    }
+
+    public Short getSortOrder() {
+        return sortOrder;
     }
 
     public void setName (String name) {
@@ -69,11 +83,15 @@ public class PriceTierEntity extends BaseEntity {
         this.description = description;
     }
 
-    public void setIsEnabled (boolean isEnabled) {
+    public void setIsEnabled (Boolean isEnabled) {
         this.isEnabled = isEnabled;
     }
 
     public void setDeletedAt(LocalDateTime deletedAt) {
         this.deletedAt = deletedAt;
+    }
+
+    public void setSortOrder(Short sortOrder) {
+        this.sortOrder = sortOrder;
     }
 }
