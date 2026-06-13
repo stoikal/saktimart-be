@@ -5,8 +5,12 @@ import com.stoikal.saktimart.pricing.dto.PriceTierResponse;
 import com.stoikal.saktimart.pricing.entity.PriceTierEntity;
 import com.stoikal.saktimart.pricing.repository.PriceTierRepository;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Map;
+import java.util.UUID;
+import java.util.stream.Collectors;
 
 @Service
 public class PriceTierService {
@@ -47,5 +51,20 @@ public class PriceTierService {
         );
 
         return toResponse(priceTierRepository.save(entity));
+    }
+
+    @Transactional
+    public void updateSortOrder(List<UUID> ids) {
+        Map<UUID, PriceTierEntity> map = priceTierRepository.findAllById(ids)
+                .stream()
+                .filter(e -> Boolean.TRUE.equals(e.getIsEnabled()) && e.getDeletedAt() == null)
+                .collect(Collectors.toMap(PriceTierEntity::getIdPriceTier, e -> e));
+
+        for (int i = 0; i < ids.size(); i++) {
+            PriceTierEntity entity = map.get(ids.get(i));
+            if (entity != null) {
+                entity.setSortOrder((short) (i + 1));
+            }
+        }
     }
 }

@@ -9,7 +9,7 @@ import java.util.Optional;
 import java.util.UUID;
 
 public interface PriceTierRepository extends JpaRepository<PriceTierEntity, UUID> {
-    @Query("SELECT MAX(p.sortOrder) FROM PriceTierEntity p")
+    @Query("SELECT MAX(p.sortOrder) FROM PriceTierEntity p WHERE p.isEnabled = true AND p.deletedAt IS NULL")
     Optional<Short> findMaxSortOrder();
 
     List<PriceTierEntity> findByIsEnabledTrueAndDeletedAtIsNullOrderBySortOrderAsc();
