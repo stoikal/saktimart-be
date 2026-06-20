@@ -1,6 +1,7 @@
 package com.stoikal.saktimart.pricing.service;
 
 import com.stoikal.saktimart.pricing.dto.CreatePriceTierRequest;
+import com.stoikal.saktimart.pricing.dto.PriceTierFilterRequest;
 import com.stoikal.saktimart.pricing.dto.PriceTierResponse;
 import com.stoikal.saktimart.pricing.entity.PriceTierEntity;
 import com.stoikal.saktimart.pricing.repository.PriceTierRepository;
@@ -22,6 +23,7 @@ public class PriceTierService {
                 entity.getName(),
                 entity.getDescription(),
                 entity.getIsEnabled(),
+                entity.getIsDefault(),
                 entity.getDeletedAt(),
                 entity.getSortOrder()
         );
@@ -31,8 +33,8 @@ public class PriceTierService {
         this.priceTierRepository = priceTierRepository;
     }
 
-    public List<PriceTierResponse> findAll() {
-        return priceTierRepository.findByIsEnabledTrueAndDeletedAtIsNullOrderBySortOrderAsc()
+    public List<PriceTierResponse> findAll(PriceTierFilterRequest filter) {
+        return priceTierRepository.findAllFiltered(filter.isEnabled())
                 .stream()
                 .map(this::toResponse)
                 .toList();
@@ -57,7 +59,7 @@ public class PriceTierService {
     public void updateSortOrder(List<UUID> ids) {
         Map<UUID, PriceTierEntity> map = priceTierRepository.findAllById(ids)
                 .stream()
-                .filter(e -> Boolean.TRUE.equals(e.getIsEnabled()) && e.getDeletedAt() == null)
+                .filter(e -> e.getDeletedAt() == null)
                 .collect(Collectors.toMap(PriceTierEntity::getIdPriceTier, e -> e));
 
         for (int i = 0; i < ids.size(); i++) {

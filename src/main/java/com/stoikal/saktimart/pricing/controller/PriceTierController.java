@@ -2,6 +2,7 @@ package com.stoikal.saktimart.pricing.controller;
 
 import com.stoikal.saktimart.common.dto.ApiEnvelope;
 import com.stoikal.saktimart.pricing.dto.CreatePriceTierRequest;
+import com.stoikal.saktimart.pricing.dto.PriceTierFilterRequest;
 import com.stoikal.saktimart.pricing.dto.PriceTierResponse;
 import com.stoikal.saktimart.pricing.dto.UpdatePriceTierSortOrderRequest;
 import com.stoikal.saktimart.pricing.service.PriceTierService;
@@ -9,12 +10,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -29,8 +25,11 @@ public class PriceTierController {
     }
 
     @GetMapping("")
-    public ApiEnvelope<List<PriceTierResponse>> listPriceTiers() {
-        return ApiEnvelope.success(priceTierService.findAll());
+    public ApiEnvelope<List<PriceTierResponse>> listPriceTiers(
+            @RequestParam(required = false) Boolean isEnabled
+    ) {
+        PriceTierFilterRequest filter = new PriceTierFilterRequest(isEnabled);
+        return ApiEnvelope.success(priceTierService.findAll(filter));
     }
 
     @PostMapping("")

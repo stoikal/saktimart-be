@@ -7,7 +7,8 @@ public record PriceTierResponse(
         UUID idPriceTier,
         String name,
         String description,
-        boolean isEnabled,
+        Boolean isEnabled,
+        Boolean isDefault,
         LocalDateTime deletedAt,
         Short sortOrder
 ) {
