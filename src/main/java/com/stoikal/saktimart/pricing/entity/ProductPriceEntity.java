@@ -17,9 +17,11 @@ public class ProductPriceEntity extends BaseEntity {
     private UUID idProductPrice;
 
     @ManyToOne
+    @JoinColumn(name = "id_price_tier")
     private PriceTierEntity priceTier;
 
     @ManyToOne
+    @JoinColumn(name = "id_product")
     private ProductEntity product;
 
     @Column(precision = 15, scale = 2)

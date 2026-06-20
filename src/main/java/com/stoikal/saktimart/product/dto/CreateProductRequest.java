@@ -8,5 +8,6 @@ public record CreateProductRequest(
         String name,
         String description,
         String barcode,
-        List<UUID> categories) {
+        List<UUID> categories,
+        List<CreateProductPriceRequest> prices) {
 }

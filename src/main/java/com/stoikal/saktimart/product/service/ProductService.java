@@ -3,9 +3,12 @@ package com.stoikal.saktimart.product.service;
 import com.stoikal.saktimart.common.dto.PageableRequest;
 import com.stoikal.saktimart.common.dto.PaginatedResponse;
 import com.stoikal.saktimart.common.exception.ResourceNotFoundException;
+import com.stoikal.saktimart.pricing.entity.PriceTierEntity;
 import com.stoikal.saktimart.pricing.entity.ProductPriceEntity;
+import com.stoikal.saktimart.pricing.repository.PriceTierRepository;
 import com.stoikal.saktimart.pricing.repository.ProductPriceRepository;
 import com.stoikal.saktimart.product.dto.CategorySummary;
+import com.stoikal.saktimart.product.dto.CreateProductPriceRequest;
 import com.stoikal.saktimart.product.dto.CreateProductRequest;
 import com.stoikal.saktimart.product.dto.PriceSummary;
 import com.stoikal.saktimart.product.dto.ProductResponse;
@@ -15,8 +18,10 @@ import com.stoikal.saktimart.product.repository.CategoryRepository;
 import com.stoikal.saktimart.product.repository.ProductRepository;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -30,6 +35,8 @@ public class ProductService {
     private final ProductRepository productRepository;
 
     private final ProductPriceRepository productPriceRepository;
+
+    private final PriceTierRepository priceTierRepository;
 
     private CategorySummary toCategorySummary(CategoryEntity category) {
         return new CategorySummary(
@@ -57,10 +64,11 @@ public class ProductService {
         );
     }
 
-    public ProductService(ProductRepository productRepository, CategoryRepository categoryRepository, ProductPriceRepository productPriceRepository) {
+    public ProductService(ProductRepository productRepository, CategoryRepository categoryRepository, ProductPriceRepository productPriceRepository, PriceTierRepository priceTierRepository) {
         this.productRepository = productRepository;
         this.categoryRepository = categoryRepository;
         this.productPriceRepository = productPriceRepository;
+        this.priceTierRepository = priceTierRepository;
     }
 
     public PaginatedResponse<ProductResponse> findAll(PageableRequest request) {
@@ -106,6 +114,7 @@ public class ProductService {
 
     }
 
+    @Transactional
     public ProductResponse create(CreateProductRequest request) {
         String normalizedSku = request.sku().trim().toUpperCase();
 
@@ -117,6 +126,15 @@ public class ProductService {
             for (UUID idProductCategory : request.categories()) {
                 if (!categoryRepository.existsById(idProductCategory)) {
                     throw new IllegalArgumentException("Category doesn't exist: " + idProductCategory);
+                }
+            }
+        }
+
+        // pengecekan apakah price tier id yang diterima ada di db
+        if (request.prices() != null && !request.prices().isEmpty()) {
+            for (CreateProductPriceRequest priceReq : request.prices()) {
+                if (!priceTierRepository.existsById(priceReq.idPriceTier())) {
+                    throw new IllegalArgumentException("Price tier doesn't exist: " + priceReq.idPriceTier());
                 }
             }
         }
@@ -133,7 +151,31 @@ public class ProductService {
             categories.forEach(newProduct::addCategory);
         }
 
-        return toResponse(productRepository.save(newProduct), List.of());
+        ProductEntity savedProduct = productRepository.save(newProduct);
+
+        //
+        List<PriceSummary> priceSummaries = new ArrayList<>();
+        if (request.prices() != null && !request.prices().isEmpty()) {
+            Map<UUID, PriceTierEntity> tierMap = priceTierRepository.findAllById(
+                    request.prices().stream().map(CreateProductPriceRequest::idPriceTier).toList()
+            ).stream().collect(Collectors.toMap(PriceTierEntity::getIdPriceTier, t -> t));
+
+            LocalDateTime now = LocalDateTime.now();
+            for (CreateProductPriceRequest priceReq : request.prices()) {
+                PriceTierEntity tier = tierMap.get(priceReq.idPriceTier());
+                ProductPriceEntity priceEntity = new ProductPriceEntity(
+                        null,
+                        tier,
+                        savedProduct,
+                        now,
+                        null);
+                priceEntity.setPrice(priceReq.price());
+                productPriceRepository.save(priceEntity);
+                priceSummaries.add(new PriceSummary(tier.getName(), priceReq.price()));
+            }
+        }
+
+        return toResponse(savedProduct, priceSummaries);
     }
 
     public void softDeleteById(UUID id) {
