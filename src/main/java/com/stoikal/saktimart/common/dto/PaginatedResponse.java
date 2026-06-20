@@ -3,9 +3,9 @@ package com.stoikal.saktimart.common.dto;
 import java.util.List;
 
 public record PaginatedResponse<T>(
-        List<T> elements,
+        List<T> items,
         int pageNumber,
         int pageSize,
-        long totalElements,
+        long totalItems,
         int totalPages) {
 }
