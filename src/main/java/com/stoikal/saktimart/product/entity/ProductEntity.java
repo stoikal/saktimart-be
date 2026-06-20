@@ -36,6 +36,8 @@ public class ProductEntity extends BaseEntity {
 
     private String barcode;
 
+    private Boolean isEnabled = true;
+
     @ManyToMany
     @JoinTable(
         schema = "master",
@@ -99,6 +101,14 @@ public class ProductEntity extends BaseEntity {
 
     public void setBarcode(String barcode) {
         this.barcode = barcode;
+    }
+
+    public Boolean getIsEnabled() {
+        return isEnabled;
+    }
+
+    public void setIsEnabled(Boolean isEnabled) {
+        this.isEnabled = isEnabled;
     }
 
     public void addCategory(CategoryEntity category) {

@@ -34,12 +34,12 @@ spring.jpa.hibernate.ddl-auto=validate
 # Flyway config (defaults are fine, but explicit is better)
 spring.flyway.enabled=true
 spring.flyway.locations=classpath:db/migration
-spring.flyway.baseline-on-migrate=true
+spring.flyway.baseline-on-migrate=false
 ```
 
 **Why `validate`?** Flyway owns the schema now. Hibernate should only validate that entities match the DB, not modify it.
 
-**Why `baseline-on-migrate`?** Not strictly needed since DB is clean, but good safety net if someone runs the app against a DB that already has tables.
+**Why `baseline-on-migrate=false`?** The DB is clean. Setting this to `true` would cause Flyway to baseline on any existing Hibernate-generated tables (from the old `ddl-auto=update` era), marking them as "already applied" and skipping creation. Since we want Flyway to own everything from scratch, this must be `false`.
 
 > **Note:** If a `flyway_schema_history` table exists from a prior failed attempt, drop it before first run: `DROP TABLE IF EXISTS flyway_schema_history;`
 
@@ -68,7 +68,7 @@ Note: `transaction` is a PostgreSQL reserved word — must be quoted.
 - `master.product` — sku (case-insensitive unique via `LOWER(sku)` index), name, description, barcode, is_enabled, deleted_at, created_at, updated_at
 - `master.product_code` — code (case-insensitive unique via `LOWER(code)` index)
 - `master.product_category` — name, description, id_parent (self-ref FK), is_enabled, created_at, updated_at (hard-deleted, no soft delete)
-- `master.product_category_mapping` — composite PK (id_product, id_product_category), created_at, updated_at
+- `master.product_category_mapping` — composite PK `(id_product, id_product_category)`, created_at, updated_at. No separate `id` column.
 - `master.customer` — name, id_price_tier (FK to pricing.price_tier), deleted_at, created_at, updated_at
 - `master.user` — name, role, is_enabled, deleted_at, created_at, updated_at
 - `master.supplier` — name, description, is_enabled, deleted_at, created_at, updated_at
@@ -77,7 +77,7 @@ Note: `transaction` is a PostgreSQL reserved word — must be quoted.
 - `pricing.price_tier` — name, description, is_default, is_enabled, sort_order, deleted_at, created_at, updated_at
 - `pricing.product_price` — id_product (FK), id_price_tier (FK), price (NUMERIC(15,2)), valid_from, valid_to, created_at, updated_at
 
-**transaction schema:**
+**transaction schema** (all table references must be quoted: `"transaction".purchase`, `"transaction".sale_item`, etc.):
 - `transaction.purchase` — id_supplier (FK), invoice_number, total, created_at, updated_at
 - `transaction.purchase_item` — id_purchase (FK), id_product (FK), cost_price, qty, subtotal, recorded_name, recorded_sku, created_at, updated_at
 - `transaction.sale` — id_customer (FK), total_amount, invoice_number (unique), grand_total, paid_amount, change_amount, discount_amount, transaction_date, id_user (FK), created_at, updated_at
@@ -86,7 +86,7 @@ Note: `transaction` is a PostgreSQL reserved word — must be quoted.
 **inventory schema:**
 - `inventory.product_valuation` — id_product (FK, unique), avg_cost (bigint), last_purchase_price (bigint), created_at, updated_at
 - `inventory.product_inventory` — id_product (FK, unique), stock_qty (int), created_at, updated_at
-- `inventory.stock_movement` — id_product (FK), qty_change (int), movement_type, reference_id, created_at, updated_at
+- `inventory.stock_movement` — id_product (FK), qty_change (int), movement_type, reference_id (no FK — polymorphic reference to sale_id or purchase_id), created_at, updated_at
 
 ### Table creation order (FK dependencies)
 
@@ -149,6 +149,10 @@ All FK constraints must be explicitly named to stay consistent with entity `@For
 fk_{table}_{referenced_table}
 ```
 
+For self-referencing FKs, append `_parent` or `_self` to disambiguate:
+- `fk_product_category_parent` (self-ref on `product_category.id_parent`)
+- `fk_sale_item_original_sale_item` (self-ref on `sale_item.id_original_sale_item`)
+
 Examples: `fk_product_code_product`, `fk_customer_price_tier`, `fk_product_category_parent`.
 
 Entities that already specify `@ForeignKey(name = "...")` must match the migration SQL exactly.
@@ -171,7 +175,7 @@ After V1 is applied, update entity classes to match the SQL exactly:
 - Ensure `@Table(schema = "...")` matches on all entities
 - Ensure column names match (`snake_case` in DB vs camelCase in Java)
 - Do NOT add `deletedAt` to `CategoryEntity` — it is hard-deleted
-- **Add `isEnabled` field to `ProductEntity`** — the DB has `is_enabled boolean [default: true]` on `master.product` but the entity is missing it
+- **BLOCKER: Add `isEnabled` field to `ProductEntity`** — the DB has `is_enabled boolean [default: true]` on `master.product` but the entity is missing it. The app **will not start** with `ddl-auto=validate` until this is added.
 - Verify the `product_category_mapping` join table definition matches the SQL (composite PK, column names)
 - Verify `@Column(precision = 15, scale = 2)` on `ProductPriceEntity.price` matches DB `NUMERIC(15,2)` — already correct
 - Verify `@SQLInsert` on `ProductEntity.categories` still works with the migration's column definitions
@@ -191,6 +195,18 @@ Naming convention: `V{version}__{description}.sql`
 - Keep migrations small and focused.
 - Test migrations on a clean DB before committing.
 
+## Step 6: Migration Failure Recovery
+
+If V1 fails partway through (e.g., FK constraint error), Flyway blocks re-running the same migration by default.
+
+**Recovery steps:**
+1. Fix the SQL in `V1__init_schema.sql`
+2. Drop the partial state: `DROP TABLE IF EXISTS flyway_schema_history;`
+3. Drop any partially created tables/schemas (since the DB should be clean)
+4. Restart the app — Flyway will run V1 from scratch
+
+> **Tip:** For a clean DB, you can also just `DROP SCHEMA master, pricing, "transaction", inventory CASCADE;` before restarting.
+
 ## Migration File Checklist
 
 | # | File | What it does |
@@ -200,3 +216,4 @@ Naming convention: `V{version}__{description}.sql`
 | 3 | Write V1__init_schema.sql | Create all schemas + all 16 tables |
 | 4 | Align JPA entities | Match column names, types, annotations |
 | 5 | Verify | `./mvnw flyway:migrate` then `./mvnw spring-boot:run` |
+| 6 | Failure recovery (if needed) | Drop `flyway_schema_history`, restart |
