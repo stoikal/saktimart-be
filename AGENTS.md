@@ -189,8 +189,6 @@ Table pricing.price_tier {
   created_at datetime [default: 'now()']
   updated_at datetime
 }
-// NOTE: a DEFAULT tier with id `00000000-0000-0000-0000-000000000001` is seeded by Flyway V2.
-//       It cannot be deleted due to the `prevent_default_price_tier_delete` trigger.
 
 Table master.customer {
   id_customer uuid [pk]
@@ -284,6 +282,8 @@ Table inventory.stock_movement {
   created_at datetime [default: 'now()']
   updated_at datetime
 }
+
+Ref: "transaction"."sale_item"."id_sale_item" < "transaction"."sale_item"."id_product"
 
 
 ```
