@@ -23,6 +23,8 @@ public class CategoryEntity extends BaseEntity {
 
     private String description;
 
+    private Boolean isEnabled;
+
     @ManyToOne
     @JoinColumn(name = "id_parent", foreignKey = @ForeignKey(name = "fk_product_category_parent"))
     private CategoryEntity parent;
@@ -31,10 +33,11 @@ public class CategoryEntity extends BaseEntity {
     }
 
     public CategoryEntity(UUID idProductCategory, String name, String description,
-            CategoryEntity parent) {
+            Boolean isEnabled, CategoryEntity parent) {
         this.idProductCategory = idProductCategory;
         this.name = name;
         this.description = description;
+        this.isEnabled = isEnabled;
         this.parent = parent;
     }
 
@@ -50,6 +53,10 @@ public class CategoryEntity extends BaseEntity {
         return description;
     }
 
+    public Boolean getIsEnabled() {
+        return isEnabled;
+    }
+
     public CategoryEntity getParent() {
         return parent;
     }
@@ -60,6 +67,10 @@ public class CategoryEntity extends BaseEntity {
 
     public void setDescription(String description) {
         this.description = description;
+    }
+
+    public void setIsEnabled(Boolean isEnabled) {
+        this.isEnabled = isEnabled;
     }
 
     public void setParent(CategoryEntity parent) {

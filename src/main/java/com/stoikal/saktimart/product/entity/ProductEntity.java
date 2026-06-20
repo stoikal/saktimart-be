@@ -28,7 +28,6 @@ public class ProductEntity extends BaseEntity {
     @GeneratedValue
     private UUID idProduct;
 
-    @Column(unique = true)
     private String sku;
 
     private String name;

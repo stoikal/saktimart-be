@@ -64,7 +64,7 @@ This repository is listed under GitNexus **group(s): saktimart** (see `~/.gitnex
 ```
 Table master.product {
   id_product uuid [pk]
-  sku text [unique]
+  sku text
   name text
   description text
   barcode text
@@ -72,12 +72,18 @@ Table master.product {
   deleted_at datetime
   created_at datetime [default: 'now()']
   updated_at datetime
+  indexes {
+    sku unique [note: 'case-insensitive via LOWER(sku)']
+  }
 }
 
 Table master.product_code {
   id_product_code uuid [pk]
   id_product uuid [ref: - master.product.id_product]
-  code text [unique]
+  code text
+  indexes {
+    code unique [note: 'case-insensitive via LOWER(code)']
+  }
 }
 
 Table inventory.product_valuation {
@@ -95,7 +101,6 @@ Table master.product_category {
   description text
   id_parent uuid [ref: > master.product_category.id_product_category]
   is_enabled boolean [default: true]
-  deleted_at datetime
   created_at datetime [default: 'now()']
   updated_at datetime
 }
@@ -119,7 +124,7 @@ Table pricing.product_price {
   id_product_price uuid [pk]
   id_product uuid [ref: > master.product.id_product]
   id_price_tier uuid [ref: > pricing.price_tier.id_price_tier]
-  price bigint
+  price numeric(15,2)
   valid_from datetime
   valid_to datetime
   created_at datetime [default: 'now()']
@@ -131,6 +136,7 @@ Table pricing.price_tier {
   id_price_tier uuid [pk]
   name text
   description text
+  is_default boolean [default: false]
   is_enabled boolean [default: true]
   sort_order smallint
   deleted_at datetime
@@ -216,13 +222,13 @@ Table transaction.sale_item {
   recorded_name text
   recorded_sku text
   type text // 'SALE', 'RETURN'
-  id_original_sale_item_id uuid [ref: > transaction.sale_item.id_sale_item]
+  id_original_sale_item uuid [ref: > transaction.sale_item.id_sale_item]
   created_at datetime [default: 'now()']
   updated_at datetime
 }
 
 Table inventory.stock_movement {
-  id uuid [pk]
+  id_stock_movement uuid [pk]
   id_product uuid [ref: > master.product.id_product]
   qty_change int
   movement_type text // 'SALE', 'PURCHASE', 'ADJUSTMENT', 'RETURN'

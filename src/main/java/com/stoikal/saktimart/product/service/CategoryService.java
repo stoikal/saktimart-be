@@ -63,6 +63,7 @@ public class CategoryService {
                 null,
                 request.name(),
                 request.description(),
+                true,
                 parent);
 
         return toResponse(categoryRepository.save(newCategory));
